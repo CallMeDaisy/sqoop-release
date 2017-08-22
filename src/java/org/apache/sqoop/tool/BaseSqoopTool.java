@@ -46,6 +46,7 @@ import com.cloudera.sqoop.cli.RelatedOptions;
 import com.cloudera.sqoop.cli.ToolOptions;
 import com.cloudera.sqoop.lib.DelimiterSet;
 import com.cloudera.sqoop.manager.ConnManager;
+import com.cloudera.sqoop.manager.GenericJdbcManager;
 import com.cloudera.sqoop.metastore.JobData;
 
 /**
@@ -81,6 +82,10 @@ public abstract class BaseSqoopTool extends com.cloudera.sqoop.tool.SqoopTool {
   public static final String DIRECT_ARG = "direct";
   public static final String BATCH_ARG = "batch";
   public static final String TABLE_ARG = "table";
+  //--> kafka related --spp
+  public static final String BROKER_LIST_ARG = "broker-list";
+  public static final String TOPIC_ARG = "topic";
+  // <--
   public static final String STAGING_TABLE_ARG = "staging-table";
   public static final String CLEAR_STAGING_TABLE_ARG = "clear-staging-table";
   public static final String COLUMNS_ARG = "columns";
@@ -263,6 +268,19 @@ public abstract class BaseSqoopTool extends com.cloudera.sqoop.tool.SqoopTool {
       sqoopOpts.setToolName(getToolName());
     try {
       JobData data = new JobData(sqoopOpts, this);
+      
+      // -->added spp  
+      if (sqoopOpts.getDriverClassName() != null && sqoopOpts.getConnManagerClassName() == null) {
+          LOG.warn("Parameter --driver is set to an explicit driver however"
+            + " appropriate connection manager is not being set (via"
+            + " --connection-manager). Sqoop is going to fall back to "
+            + GenericJdbcManager.class.getCanonicalName() + ". Please specify"
+            + " explicitly which connection manager should be used next time."
+          );
+          throw new InvalidOptionsException("You must specify --connection-manager when you specified --driver.");
+      }
+      // <--
+      
       this.manager = new ConnFactory(sqoopOpts.getConf()).getManager(data);
       return true;
     } catch (Exception e) {
