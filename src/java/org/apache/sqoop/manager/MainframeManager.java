@@ -38,6 +38,7 @@ import org.apache.sqoop.mapreduce.mainframe.MainframeDatasetInputFormat;
 import org.apache.sqoop.mapreduce.mainframe.MainframeImportJob;
 
 import com.cloudera.sqoop.SqoopOptions;
+import com.cloudera.sqoop.mapreduce.KafkaImportJob;
 import com.cloudera.sqoop.util.ImportException;
 
 
@@ -88,7 +89,12 @@ public class MainframeManager extends com.cloudera.sqoop.manager.ConnManager {
             + "classpath, cannot import to Accumulo!");
       }
       importer = new AccumuloImportJob(opts, context);
-    } else {
+    }
+    // --> kafka related --spp
+    else if (opts.getTopicName() != null){
+    	importer = new KafkaImportJob(opts, context);
+    } // <--
+    else {
       // Import to HDFS.
       importer = new MainframeImportJob(opts, context);
     }
