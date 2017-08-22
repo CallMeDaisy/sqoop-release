@@ -10,6 +10,6 @@ Welcome to Sqoop!
 * Fix bug-1 -- ERROR: SQL exception accessing current timestamp.
 * Fix bug-2 -- NullImporterExption when importing data to hbase with lastmodified mode.
 
-== More Information to see in branch: HDP-2.5.5.0
+== More Information to see branch: HDP-2.5.5.0
 
 
