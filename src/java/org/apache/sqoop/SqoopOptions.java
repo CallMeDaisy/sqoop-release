@@ -173,6 +173,11 @@ public class SqoopOptions implements Cloneable {
   private String hiveDelimsReplacement;
   @StoredAsProperty("hive.partition.key") private String hivePartitionKey;
   @StoredAsProperty("hive.partition.value") private String hivePartitionValue;
+  
+  //--> kafka related --spp
+  @StoredAsProperty("kafka.topic")	private String topicName;
+  @StoredAsProperty("kafka.broker-list") private String brokerList;
+  //<--
   @StoredAsProperty("hcatalog.table.name")
   private String hCatTableName;
   @StoredAsProperty("hcatalog.database.name")
@@ -1172,6 +1177,22 @@ public class SqoopOptions implements Cloneable {
   public void setTableName(String table) {
     this.tableName = table;
   }
+  
+  //--> kafka related --spp
+  public void setTopicName(String topic){
+	  this.topicName = topic;
+  }
+
+  public void setBrokerList(String broker){
+	  this.brokerList = broker;
+  }
+  public String getTopicName() {
+	    return topicName;
+  }
+  public String getBrokerList() {
+	    return brokerList;
+  }
+  //  <--
 
   public String getStagingTableName() {
     return stagingTableName;
