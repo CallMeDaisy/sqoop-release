@@ -54,6 +54,7 @@ import com.cloudera.sqoop.mapreduce.HBaseImportJob;
 import com.cloudera.sqoop.mapreduce.ImportJobBase;
 import com.cloudera.sqoop.mapreduce.JdbcExportJob;
 import com.cloudera.sqoop.mapreduce.JdbcUpdateExportJob;
+import com.cloudera.sqoop.mapreduce.KafkaImportJob;
 import com.cloudera.sqoop.mapreduce.db.DataDrivenDBInputFormat;
 import com.cloudera.sqoop.util.ExportException;
 import com.cloudera.sqoop.util.ImportException;
@@ -680,7 +681,12 @@ public abstract class SqlManager
              + "classpath, cannot import to Accumulo!");
        }
        importer = new AccumuloImportJob(opts, context);
-    } else {
+    } 
+    // --> kafka related --spp
+    else if (opts.getTopicName() != null){
+    	importer = new KafkaImportJob(opts, context);
+    } // <-- 
+    else {
       // Import to HDFS.
       importer = new DataDrivenImportJob(opts, context.getInputFormat(),
               context);
@@ -723,7 +729,13 @@ public abstract class SqlManager
               + " cannot import to Accumulo!");
       }
       importer = new AccumuloImportJob(opts, context);
-    } else {
+    }
+    // --> kafka related --spp
+    else if (opts.getTopicName() != null){
+    	importer = new KafkaImportJob(opts, context);
+    } 
+    // <-- 
+    else {
       // Import to HDFS.
       importer = new DataDrivenImportJob(opts, context.getInputFormat(),
           context);
@@ -969,7 +981,8 @@ public abstract class SqlManager
    * @return a SQL query to retrieve the current timestamp from the db.
    */
   protected String getCurTimestampQuery() {
-    return "SELECT CURRENT_TIMESTAMP()";
+	//System.out.println("@spp: removed () from \"SELECT CURRENT_TIMESTAMP()\"");
+    return "SELECT CURRENT_TIMESTAMP";
   }
 
   @Override
