@@ -254,6 +254,25 @@ public class ImportJobBase extends JobBase {
     try {
       // Set the external jar to use for the job.
       job.getConfiguration().set("mapred.jar", ormJarFile);
+      // --> kafka related --spp
+      SqoopOptions  options = context.getOptions();
+      if(options.getTopicName() != null){
+    	  if(options.getTopicName() != null ){
+    		  job.getConfiguration().set("topic", options.getTopicName());
+    	  }
+    	  if(options.getBrokerList() != null ){
+    		  job.getConfiguration().set("broker-list", options.getBrokerList());
+    	  }
+          if(options.getTableName() != null ){
+        	  job.getConfiguration().set("table-name", options.getTableName());
+          }
+          if(options.getSqlQuery() != null ) {
+        	  job.getConfiguration().set("table-name", options.getSqlQuery());
+          }
+          
+      }
+      // <--
+      
       if (options.getMapreduceJobName() != null) {
         job.setJobName(options.getMapreduceJobName());
       }
