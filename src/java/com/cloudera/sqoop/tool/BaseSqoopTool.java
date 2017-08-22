@@ -45,6 +45,13 @@ public abstract class BaseSqoopTool
           org.apache.sqoop.tool.BaseSqoopTool.BATCH_ARG;
   public static final String TABLE_ARG =
           org.apache.sqoop.tool.BaseSqoopTool.TABLE_ARG;
+  
+  //--> kafka related --spp
+  public static final String BROKER_LIST_ARG =
+          org.apache.sqoop.tool.BaseSqoopTool.BROKER_LIST_ARG;
+  public static final String TOPIC_ARG =
+          org.apache.sqoop.tool.BaseSqoopTool.TOPIC_ARG;
+  // <--
   public static final String STAGING_TABLE_ARG =
           org.apache.sqoop.tool.BaseSqoopTool.STAGING_TABLE_ARG;
   public static final String CLEAR_STAGING_TABLE_ARG =
