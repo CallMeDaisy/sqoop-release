@@ -317,8 +317,13 @@ public class ImportTool extends com.cloudera.sqoop.tool.BaseSqoopTool {
       }
       break;
     case DateLastModified:
-      if (options.getMergeKeyCol() == null && !options.isAppendMode()
-          && fs.exists(getOutputPath(options, context.getTableName(), false))) {
+// --> modified for hbase --spp
+        Path curOutpath = getOutputPath(options, context.getTableName(), false);
+        if (options.getMergeKeyCol() == null && !options.isAppendMode()
+            && curOutpath != null && fs.exists(curOutpath) ) {
+//      if (options.getMergeKeyCol() == null && !options.isAppendMode()
+//          && fs.exists(getOutputPath(options, context.getTableName(), false))) {
+// <--
         throw new ImportException("--" + MERGE_KEY_ARG + " or " + "--" + APPEND_ARG
           + " is required when using --" + this.INCREMENT_TYPE_ARG
           + " lastmodified and the output directory exists.");
@@ -509,12 +514,16 @@ public class ImportTool extends com.cloudera.sqoop.tool.BaseSqoopTool {
       manager.importQuery(context);
     }
 
-    if (options.isAppendMode()) {
-      AppendUtils app = new AppendUtils(context);
-      app.append();
-    } else if (options.getIncrementalMode() == SqoopOptions.IncrementalMode.DateLastModified) {
-      lastModifiedMerge(options, context);
+//  --> kafka related --spp
+    if(options.getTopicName() == null){// <--
+    	if (options.isAppendMode()) {
+    		AppendUtils app = new AppendUtils(context);
+    		app.append();
+    	} else if (options.getIncrementalMode() == SqoopOptions.IncrementalMode.DateLastModified) {
+    		lastModifiedMerge(options, context);
+    	}
     }
+    
 
     // If the user wants this table to be in Hive, perform that post-load.
     if (options.doHiveImport()) {
@@ -772,6 +781,17 @@ public class ImportTool extends com.cloudera.sqoop.tool.BaseSqoopTool {
       .withDescription("Reset the number of mappers to one mapper if no split key available")
       .withLongOpt(AUTORESET_TO_ONE_MAPPER)
       .create());
+    
+//  --> kafka related --spp
+    importOpts.addOption(OptionBuilder.withArgName("topic-name")
+    		.hasArg().withDescription("Topic sended to")
+            .withLongOpt(TOPIC_ARG)
+            .create());
+    importOpts.addOption(OptionBuilder.withArgName("broker-list")
+    		.hasArg().withDescription("Broker list to send msg")
+            .withLongOpt(BROKER_LIST_ARG)
+            .create());
+ //  <--
     return importOpts;
   }
 
@@ -997,6 +1017,14 @@ public class ImportTool extends com.cloudera.sqoop.tool.BaseSqoopTool {
       if (in.hasOption(AUTORESET_TO_ONE_MAPPER)) {
         out.setAutoResetToOneMapper(true);
       }
+// --> kafka related --spp
+      if (in.hasOption(TOPIC_ARG)){
+    	  out.setTopicName(in.getOptionValue(TOPIC_ARG));
+      }
+      if (in.hasOption(BROKER_LIST_ARG)){
+    	  out.setBrokerList(in.getOptionValue(BROKER_LIST_ARG));
+      }
+//        <--
 
       applyIncrementalOptions(in, out);
       applyHiveOptions(in, out);
@@ -1100,6 +1128,21 @@ public class ImportTool extends com.cloudera.sqoop.tool.BaseSqoopTool {
         throw new InvalidOptionsException("--autoreset-to-one-mapper and"
           + " --split-by cannot be used together.");
     }
+    // --> kafka related --spp
+    else if (options.getHBaseTable() != null &&
+    		options.getTopicName() != null){
+    	LOG.warn("--topic with --hbase-table are incompatible options.");
+    }else if (options.getTopicName() != null
+    		&& ( options.getTargetDir() != null || options.getWarehouseDir() != null )){
+    	LOG.warn("--target-dir or --warehouse-dir is not used if importing to kafka");
+    } else if ( options.getTopicName() == null &&
+    		options.getBrokerList() != null){
+    	throw new InvalidOptionsException("--topic is required for importing kafka.");
+    }else if(options.getTopicName() != null &&  
+    		options.getBrokerList() == null ){
+    	throw new InvalidOptionsException("--broker-list is required for importing to kafka.");
+    }
+    // <--
   }
 
   /**
