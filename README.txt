@@ -3,20 +3,26 @@
 
 This Project is forked from hortonworks/sqoop-relase.
 
+
 == Release Notes
 
 * Add the function of importing data to Apache Kafka from SQL.
 * Fix bug-1 -- ERROR: SQL exception accessing current timestamp.
 * Fix bug-2 -- NullImporterExption when importing data to hbase with lastmodified mode.
 
+
 == Instructions for use (importing data to kafka)
 
 * Example
-    sqoop import --connect jdbc:mysql://localhost:3306/DatabaseName --username root --password 123456  --table SqlTableName  --topic KafkaTopic --broker-list master:6667
+    sqoop import --connect jdbc:mysql://localhost:3306/DatabaseName 
+	--username root --password 123456  
+	--table SqlTableName  --topic KafkaTopic --broker-list master:6667
+	
 * Description 
 	1. topic -- the kafka topic 
 	2. broker-list -- the kafka broker list, format: IP:PORT 
 
+	
 == Compiling Sqoop
 
 Compiling Sqoop requires the following tools:
