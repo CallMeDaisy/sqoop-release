@@ -14,7 +14,8 @@ This Project is forked from hortonworks/sqoop-relase.
 == Instructions for use (importing data to kafka)
 
 * Example
-    sqoop import --connect jdbc:mysql://localhost:3306/DatabaseName 
+    sqoop import 
+	--connect jdbc:mysql://localhost:3306/DatabaseName 
 	--username root --password 123456  
 	--table SqlTableName  --topic KafkaTopic --broker-list master:6667
 	
